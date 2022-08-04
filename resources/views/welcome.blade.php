@@ -19,11 +19,6 @@
                     <button class="bg-gray-200 rounded-md p-2">Subir archivos</button>
                     <button class="bg-gray-200 rounded-md p-2">Subir archivos</button>
                 </div>
-
-                <form action="https://checkout-test.placetopay.com/api/session" method="POST">
-                    <input type="text" id="login">
-                    <button type="submit">Enviar</button>
-                </form>
             </div>
             <div id="app"></div>
         </div>
