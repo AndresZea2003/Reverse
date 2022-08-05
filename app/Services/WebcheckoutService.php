@@ -8,6 +8,7 @@ use App\Requests\CreateSessionRequest;
 use App\Requests\GetInformationRequest;
 use App\Requests\InformationRequest;
 use App\Requests\ProcessRequest;
+use App\Requests\QueryRequest;
 use App\Requests\TransactionRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -59,6 +60,14 @@ class WebcheckoutService implements WebcheckoutContract
         $TransactionRequest = new TransactionRequest($data);
         $data = $TransactionRequest->toArray();
         $url = $TransactionRequest::url(null);
+        return $this->request($data, $url);
+    }
+
+    public function query(array $data)
+    {
+        $QueryRequest = new QueryRequest($data);
+        $data = $QueryRequest->toArray();
+        $url = $QueryRequest::url(null);
         return $this->request($data, $url);
     }
 

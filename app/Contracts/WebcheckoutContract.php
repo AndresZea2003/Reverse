@@ -8,4 +8,5 @@ interface WebcheckoutContract
     public function information(array $data);
     public function process(array $data);
     public function transaction(array $data);
+    public function query(array $data);
 }
