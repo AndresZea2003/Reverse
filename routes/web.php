@@ -17,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome')->name('welcome');
 
 Route::resource('payment', PaymentController::class);
+
+//Route::view('/import', 'import')->name('import');
+
+Route::post('/import', [PaymentController::class, 'import'])->name('payment.import');
+
+Route::post('/reverse', [PaymentController::class, 'reverse'])->name('payment.reverse');

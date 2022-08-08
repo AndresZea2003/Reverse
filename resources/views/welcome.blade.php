@@ -18,124 +18,177 @@
         </div>
         <div class="flex justify-center mt-10 grid grid-cols-2">
 
-            <div class="flex-col">
-                <div class="flex justify-center">
-                    <div class="bg-green-500 px-10 pt-3 pb-10 rounded-lg flex-col">
-                        <div class="flex justify-center">
-                            <span class="text-green-200 font-bold text-xl">Process</span>
-                        </div>
-                        <div>
-                            <span>Genera un proceso introduciendo una tarjeta</span>
+            <div class="grid grid-cols-2 mx-10 gap-2">
 
-                            <div class="mt-5">
-                                <form action="{{route('payment.store')}}" method="POST">
-                                    @csrf
-                                    <label for="" class="font-bold">Number: </label>
-                                    <input type="number" name="cardNumber" id="cardNumber" required>
-                                    <button type="submit" class="bg-gray-200 rounded-md p-1">Enviar</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-center mt-5">
-                    <div class="bg-blue-500 px-16 pt-3 pb-10 rounded-lg flex-col">
-                        <div class="flex justify-center">
-                            <span class="text-green-200 font-bold text-xl">Process Massive</span>
-                        </div>
-                        <div>
+                <div class="flex-col justify-center">
+                    <div>
+                        <div class="bg-gray-300 px-10 pt-3 pb-3 rounded-lg flex-col shadow-2xl">
                             <div class="flex justify-center">
-                                <span>Descarga todos los pagos sin reversar</span>
+                                <span class="font-bold text-xl">Pago masivo</span>
                             </div>
-                            <div class="mt-5">
-                                <form action="{{route('payment.update', 6)}}" method="POST">
-                                    @method('PUT')
-                                    @csrf
-                                    <div class="flex justify-center">
-                                        <button type="submit" class="bg-gray-200 rounded-md p-1">Descargar</button>
-                                    </div>
-                                </form>
+                            <div>
+                                <span>Escribe el numero de cuantos pagos o transacciones desea realizar</span>
+
+                                <div class="mt-5">
+                                    <form action="{{route('payment.store')}}" method="POST">
+                                        @csrf
+                                        {{--                                    <label for="" class="font-bold">Number: </label>--}}
+                                        <div class="flex justify-center">
+                                            <input type="number" name="countPayment" placeholder="Ejemplo: 18" required>
+                                        </div>
+                                        <div class="flex justify-center mt-3">
+                                            <button type="submit" class="bg-gray-100 hover:bg-gray-400 rounded-md p-1">
+                                                Enviar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <div class="bg-gray-300 px-4 pt-3 pb-3 rounded-lg flex-col shadow-2xl">
+                            <div class="flex justify-center">
+                                <span class="font-bold text-xl">Pago masivo</span>
+                            </div>
+                            <div>
+                                <span>Realiza varios pagos atravez de un arhivo excel</span>
+
+                                <div class="mt-5">
+                                    <form action="{{route('payment.import')}}" enctype="multipart/form-data"
+                                          method="POST">
+                                        @csrf
+                                        {{--                                    <label for="" class="font-bold">Number: </label>--}}
+                                        <input type="file" name="payments" required>
+                                        <div class="flex justify-center">
+                                            <button type="submit"
+                                                    class="bg-gray-100 hover:bg-gray-400 rounded-md p-1 mt-5">Enviar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex-col justify-center">
+                    <div>
+                        <div class="bg-gray-300 px-10 pt-3 pb-3 rounded-lg flex-col shadow-2xl">
+                            <div class="flex justify-center">
+                                <span class="font-bold text-xl">Pago con tarjeta</span>
+                            </div>
+                            <div>
+                                <span>Escribe el numero de la tarjeta de prueba que deseas usar</span>
+
+                                <div class="mt-5">
+                                    <form action="{{route('payment.store')}}" method="POST">
+                                        @csrf
+                                        {{--                                    <label for="" class="font-bold">Number: </label>--}}
+                                        <div class="flex justify-center">
+                                            <input type="number" name="card" placeholder="Ejemplo: 36545400008"
+                                                   required>
+                                        </div>
+                                        <div class="flex justify-center mt-3">
+                                            <button type="submit" class="bg-gray-100 hover:bg-gray-400 rounded-md p-1">
+                                                Enviar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <div class="bg-gray-300 px-4 pt-3 pb-3 rounded-lg flex-col shadow-2xl">
+                            <div class="flex justify-center">
+                                <span class="font-bold text-xl">Reverso masivo</span>
+                            </div>
+                            <div>
+                                <span>Reversa varios reversos atravez de un arhivo excel</span>
+
+                                <div class="mt-5">
+                                    <form action="{{route('payment.reverse')}}" enctype="multipart/form-data"
+                                          method="POST">
+                                        @csrf
+                                        {{--                                    <label for="" class="font-bold">Number: </label>--}}
+                                        <input type="file" name="payments" required>
+                                        <div class="flex justify-center">
+                                            <button type="submit"
+                                                    class="bg-gray-100 hover:bg-gray-400 rounded-md p-1 mt-5">Enviar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="flex justify-center mt-5">
-                    <div class="bg-red-500 px-10 pt-3 pb-10 rounded-lg flex-col">
-                        <div class="flex justify-center">
-                            <span class="text-green-200 font-bold text-xl">Reverso Masivo</span>
-                        </div>
-                        <div>
-                            <span>Reversa varios pagos atravez de excel</span>
-                            <div class="mt-5">
-                                <form action="{{route('payment.store')}}" method="POST">
-                                    @csrf
-                                    <label for="" class="font-bold">Archivo: </label><br>
-                                    <div class="flex justify-center">
-                                    <input type="file" name="cardNumber" id="cardNumber" required><br>
-                                        <button type="submit" class="bg-gray-200 rounded-md p-1">Enviar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
 
             </div>
 
             <div>
-                <div class="flex justify-center mb-5 text-xl">
-                    <span>Registros actuales -</span>
-                    <span class="font-bold">-{{$count}}--</span>
+                <div class="flex justify-center text-xl">
+                    <div class="flex bg-gray-400 px-28 py-2 rounded-t-lgc shadow-2xl">
+                        <div class="mr-24 bg-gray-300">
+                            <button class="bg-green-100 hover:bg-gray-300 py-1 px-3 rounded-md">Descargar</button>
+                        </div>
+                        <div>
+                            <span>Registros actuales -</span>
+                            <span class="font-bold">-{{$count}}--</span>
+                        </div>
+                    </div>
                 </div>
-
-                <table>
-                    <thead>
-                    <tr>
-                        <th class="px-5">ID</th>
-                        <th class="px-5">Internal Reference</th>
-                        <th class="px-5">Status</th>
-                        <th class="px-5">Reverse</th>
-                        <th>Delete</th>
-                        <th>Reverse</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach ($payments as $payment)
+                <div class="flex justify-center">
+                    <table class="bg-gray-100 shadow-2xl">
+                        <thead>
                         <tr>
-                            <td class="px-5">{{$payment->id}}</td>
-                            <td class="px-5">{{$payment->internal_reference}}</td>
-                            <td class="px-5">{{$payment->status}}</td>
-                            <td class="px-5 font-bold">
-                                @if($payment->reverse == 'true')
-                                    <span class="text-green-400">{{$payment->reverse}}</span>
-                                @elseif($payment->reverse == 'false')
-                                    <span class="text-red-600">{{$payment->reverse}}</span>
-                                @endif
-
-                            </td>
-                            <td class="px-5">
-                                <form action="{{route('payment.destroy', $payment->id) }}" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-red-500 rounded-md px-2 py-1">X</button>
-                                </form>
-                            </td>
-                            <td class="px-5">
-                                <form action="{{route('payment.update', $payment->id)}}" method="POST">
-                                    @method('PATCH')
-                                    @csrf
-                                    <div class="flex justify-center">
-                                        <button type="submit" class="bg-green-300 rounded-md px-2 py-1">R</button>
-                                    </div>
-                                </form>
-                            </td>
+                            <th class="pl-8 pr-5">ID</th>
+                            <th class="px-5">Internal Reference</th>
+                            <th class="px-5">Status</th>
+                            <th class="px-5">Reverse</th>
+                            <th class="px-5">Delete</th>
+                            <th class="pl-5 pr-8">Reverse</th>
                         </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        @foreach ($payments as $payment)
+                            <tr>
+                                <td class="pl-6 pr-5">{{$payment->id}}</td>
+                                <td class="px-5">{{$payment->internal_reference}}</td>
+                                <td class="px-5">{{$payment->status}}</td>
+                                <td class="px-5 font-bold">
+                                    @if($payment->reverse == 'true')
+                                        <span class="text-green-400">{{$payment->reverse}}</span>
+                                    @elseif($payment->reverse == 'false')
+                                        <span class="text-red-600">{{$payment->reverse}}</span>
+                                    @endif
+
+                                </td>
+                                <td class="px-5">
+                                    <form action="{{route('payment.destroy', $payment->id) }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-500 rounded-md px-2 py-1">X</button>
+                                    </form>
+                                </td>
+                                <td class="px-5">
+                                    <form action="{{route('payment.update', $payment->id)}}" method="POST">
+                                        @method('PATCH')
+                                        @csrf
+                                        <div class="flex justify-center">
+                                            <button type="submit" class="bg-green-300 rounded-md px-2 py-1">R</button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -150,7 +203,6 @@
         </div>
     </div>
 </div>
-
 @vite('resources/js/app.js')
 </body>
 </html>

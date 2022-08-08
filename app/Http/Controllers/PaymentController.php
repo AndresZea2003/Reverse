@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\PaymentsImport;
+use App\Imports\ReversesImport;
 use App\Models\Payment;
 use App\Services\WebcheckoutService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentController extends Controller
 {
     public function index(): View
     {
-        $payments = Payment::paginate(10);
+//        $payments = Payment::paginate(10);
+        $payments = Payment::all();
         $count = Payment::all()->where('id')->count();
         return view('welcome', compact('payments', 'count'));
     }
@@ -22,83 +26,76 @@ class PaymentController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
     public function store(Request $request)
     {
-        $payment = new Payment();
+        $i = 0;
+        $card = '36545400000008';
 
-        $data = [
-            'payment' => [
-                'reference' => 'TEST_1000',
-                'description' => 'Conexion con WebCheckout desde un test',
-                'amount' => [
-                    'currency' => 'COP',
-                    'total' => '50000',
-                ]
-            ],
-            "instrument" => [
-                "card" => [
-                    "number" => $request->input('cardNumber'),
-                    "expiration" => "12/20",
-                    "cvv" => "123",
-                    "installments" => 2
-                ]
-            ]
-        ];
-
-        $response = (new WebcheckoutService())->process($data);
-
-        $payment->internal_reference = $response['internalReference'];
-        $payment->status = $response['status']['status'];
-
-        if ($response['refunded'] == true) {
-            $payment->reverse = 'true';
+        if ($request->input('countPayment') != null) {
+            $count = $request->input('countPayment');
         } else {
-            $payment->reverse = 'false';
+            $count = 1;
         }
 
-        $payment->save();
+        if ($request->input('card') != null) {
+            $card = $request->input('card');
+
+        }
+
+        while ($i < $count) {
+
+            $payment = new Payment();
+
+            $data = [
+                'payment' => [
+                    'reference' => 'TEST_1000',
+                    'description' => 'Conexion con WebCheckout desde un test',
+                    'amount' => [
+                        'currency' => 'COP',
+                        'total' => '50000',
+                    ]
+                ],
+                "instrument" => [
+                    "card" => [
+                        "number" => $card,
+                        "expiration" => "12/20",
+                        "cvv" => "123",
+                        "installments" => 2
+                    ]
+                ]
+            ];
+            $response = (new WebcheckoutService())->process($data);
+
+            $payment->internal_reference = $response['internalReference'];
+            $payment->status = $response['status']['status'];
+
+            if ($response['refunded'] == true) {
+                $payment->reverse = 'true';
+            } else {
+                $payment->reverse = 'false';
+            }
+
+            $payment->save();
+
+            $i++;
+
+        }
 
         return redirect(route('payment.index'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Payment $process
-     * @return \Illuminate\Http\Response
-     */
     public function show(Payment $process)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Models\Payment $process
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Payment $process)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Payment $process
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
     public function update(Request $request, Payment $payment)
     {
-
         $data = ['internalReference' => $payment->attributesToArray()['internal_reference']];
 
         $responseQuery = (new WebcheckoutService())->query($data);
@@ -123,22 +120,90 @@ class PaymentController extends Controller
             $payment->reverse = 'false';
         }
 
-        $payment->save();;
+        $payment->save();
 
         return redirect(route('payment.index'));
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Payment $process
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Payment $payment)
     {
         $payment->delete();
 
         return redirect(route('payment.index'));
+    }
+
+    public function import(Request $request)
+    {
+        $payments = Excel::toCollection(new ReversesImport(), $request->file('payments'));
+
+        foreach ($payments[0] as $payment) {
+            $process = new Payment();
+
+            $data = [
+                'payment' => [
+                    'reference' => 'TEST_1000',
+                    'description' => 'Conexion con WebCheckout desde un test',
+                    'amount' => [
+                        'currency' => 'COP',
+                        'total' => '50000',
+                    ]
+                ],
+                "instrument" => [
+                    "card" => [
+                        "number" => $payment[0],
+                        "expiration" => "12/20",
+                        "cvv" => "123",
+                        "installments" => 2
+                    ]
+                ]
+            ];
+
+            $response = (new WebcheckoutService())->process($data);
+
+            $process->internal_reference = $response['internalReference'];
+            $process->status = $response['status']['status'];
+
+            if ($response['refunded'] == true) {
+                $process->reverse = 'true';
+            } else {
+                $process->reverse = 'false';
+            }
+            $process->save();
+        }
+
+        return redirect(route('payment.index'))->with('succes', 'All good');
+    }
+
+    public function reverse(Request $request)
+    {
+        $payments = Excel::toCollection(new ReversesImport(), $request->file('payments'));
+
+        foreach ($payments[0] as $payment) {
+
+            $data = [
+                "internalReference" => $payment[0],
+                "authorization" => $payment[1],
+                "action" => "reverse"
+            ];
+
+            $response = (new WebcheckoutService())->transaction($data);
+
+            $data = ['internalReference' => $payment[0]];
+
+            $responseQuery = (new WebcheckoutService())->query($data);
+
+            if ($responseQuery['refunded'] == true) {
+                $refunded = 'true';
+            } else {
+                $refunded = 'false';
+            }
+
+            Payment::where('internal_reference', $payment[0])->update([
+                'status' => $responseQuery['status']['status'],
+                'reverse' => $refunded
+            ]);
+        }
+        return redirect()->route('payment.index')->with('info', 'Importación realizada con éxito');
     }
 }
