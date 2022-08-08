@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PaymentsExport;
 use App\Imports\PaymentsImport;
 use App\Imports\ReversesImport;
 use App\Models\Payment;
@@ -11,7 +12,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
-class PaymentController extends Controller
+class PaymentsController extends Controller
 {
     public function index(): View
     {
@@ -182,14 +183,14 @@ class PaymentController extends Controller
         foreach ($payments[0] as $payment) {
 
             $data = [
-                "internalReference" => $payment[0],
-                "authorization" => $payment[1],
+                "internalReference" => $payment[1],
+                "authorization" => '000000',
                 "action" => "reverse"
             ];
 
             $response = (new WebcheckoutService())->transaction($data);
 
-            $data = ['internalReference' => $payment[0]];
+            $data = ['internalReference' => $payment[1]];
 
             $responseQuery = (new WebcheckoutService())->query($data);
 
@@ -199,11 +200,16 @@ class PaymentController extends Controller
                 $refunded = 'false';
             }
 
-            Payment::where('internal_reference', $payment[0])->update([
+            Payment::where('internal_reference', $payment[1])->update([
                 'status' => $responseQuery['status']['status'],
                 'reverse' => $refunded
             ]);
         }
         return redirect()->route('payment.index')->with('info', 'Importación realizada con éxito');
+    }
+
+    public function export()
+    {
+        return Excel::download(new PaymentsExport(), 'payments.xlsx');
     }
 }

@@ -134,7 +134,9 @@
                 <div class="flex justify-center text-xl">
                     <div class="flex bg-gray-400 px-28 py-2 rounded-t-lgc shadow-2xl">
                         <div class="mr-24 bg-gray-300">
-                            <button class="bg-green-100 hover:bg-gray-300 py-1 px-3 rounded-md">Descargar</button>
+                            <a href="{{route('payment.export')}}">
+                                <button class="bg-green-100 hover:bg-gray-300 py-1 px-3 rounded-md">Descargar</button>
+                            </a>
                         </div>
                         <div>
                             <span>Registros actuales -</span>

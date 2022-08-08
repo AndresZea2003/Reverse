@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,10 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
 
-Route::resource('payment', PaymentController::class);
+Route::resource('payment', PaymentsController::class);
 
 //Route::view('/import', 'import')->name('import');
 
-Route::post('/import', [PaymentController::class, 'import'])->name('payment.import');
+Route::post('/import', [PaymentsController::class, 'import'])->name('payment.import');
 
-Route::post('/reverse', [PaymentController::class, 'reverse'])->name('payment.reverse');
+Route::post('/reverse', [PaymentsController::class, 'reverse'])->name('payment.reverse');
+
+Route::get('/export', [PaymentsController::class, 'export'])->name('payment.export');
