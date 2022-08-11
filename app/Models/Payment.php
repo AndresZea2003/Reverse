@@ -12,6 +12,8 @@ class Payment extends Model
     protected $fillable = [
         'internal_reference',
         'status',
+        'amount',
+        'currency',
         'reverse'
     ];
 }

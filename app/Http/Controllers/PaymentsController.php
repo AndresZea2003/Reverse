@@ -19,7 +19,7 @@ class PaymentsController extends Controller
 //        $payments = Payment::paginate(10);
         $payments = Payment::all();
         $count = Payment::all()->where('id')->count();
-        return view('welcome', compact('payments', 'count'));
+        return view('payments.index', compact('payments', 'count'));
     }
 
     public function create()
@@ -40,7 +40,6 @@ class PaymentsController extends Controller
 
         if ($request->input('card') != null) {
             $card = $request->input('card');
-
         }
 
         while ($i < $count) {
@@ -69,6 +68,8 @@ class PaymentsController extends Controller
 
             $payment->internal_reference = $response['internalReference'];
             $payment->status = $response['status']['status'];
+            $payment->amount = $response['amount']['total'];
+            $payment->currency = $response['amount']['currency'];
 
             if ($response['refunded'] == true) {
                 $payment->reverse = 'true';
@@ -164,6 +165,8 @@ class PaymentsController extends Controller
 
             $process->internal_reference = $response['internalReference'];
             $process->status = $response['status']['status'];
+            $process->amount = $response['amount']['total'];
+            $process->currency = $response['amount']['currency'];
 
             if ($response['refunded'] == true) {
                 $process->reverse = 'true';

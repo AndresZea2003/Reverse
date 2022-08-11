@@ -17,6 +17,7 @@ class InformationTest extends TestCase
         $this->assertArrayHasKey('status', $response);
         $this->assertEquals('OK', $response['status']['status']);
         $this->assertArrayHasKey('credits', $response);
+        $this->assertArrayHasKey('threeDS', $response);
     }
 
     private function getInformationData(): array
