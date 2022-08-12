@@ -51,7 +51,7 @@ class PaymentsController extends Controller
                     'reference' => 'TEST_1000',
                     'description' => 'Conexion con WebCheckout desde un test',
                     'amount' => [
-                        'currency' => 'COP',
+                        'currency' => 'USD',
                         'total' => '50000',
                     ]
                 ],
@@ -147,7 +147,7 @@ class PaymentsController extends Controller
                     'reference' => 'TEST_1000',
                     'description' => 'Conexion con WebCheckout desde un test',
                     'amount' => [
-                        'currency' => 'COP',
+                        'currency' => 'USD',
                         'total' => '50000',
                     ]
                 ],
@@ -161,7 +161,22 @@ class PaymentsController extends Controller
                 ]
             ];
 
-            $response = (new WebcheckoutService())->process($data);
+            if($payment[6] === null )
+            {
+                $response = (new WebcheckoutService())->process($data);
+                $process->login = config('webcheckout.login');
+                $process->secret_key = config('webcheckout.secretKey');
+                $process->url = config('webcheckout.url');
+            }else{
+                $login = $payment[6];
+                $secretKey = $payment[7];
+                $url = $payment[8];
+                $response = (new WebcheckoutService())->processAuth($data, $login, $secretKey, $url);
+
+                $process->login = $payment[6];
+                $process->secret_key = $payment[7];
+                $process->url = $payment[8];
+            }
 
             $process->internal_reference = $response['internalReference'];
             $process->status = $response['status']['status'];
@@ -191,24 +206,79 @@ class PaymentsController extends Controller
                 "action" => "reverse"
             ];
 
-            $response = (new WebcheckoutService())->transaction($data);
+            if($payment[6] === null )
+            {
+                $response = (new WebcheckoutService())->transaction($data);
+            }else{
+                $login = $payment[6];
+                $secretKey = $payment[7];
+                $url = $payment[8];
+                $response = (new WebcheckoutService())->transactionAuth($data, $login, $secretKey, $url);
+            }
 
-            $data = ['internalReference' => $payment[1]];
-
-            $responseQuery = (new WebcheckoutService())->query($data);
-
-            if ($responseQuery['refunded'] == true) {
+            if ($response['status']['status'] == 'APPROVED')
+            {
                 $refunded = 'true';
             } else {
                 $refunded = 'false';
             }
 
             Payment::where('internal_reference', $payment[1])->update([
-                'status' => $responseQuery['status']['status'],
                 'reverse' => $refunded
             ]);
         }
         return redirect()->route('payment.index')->with('info', 'Importación realizada con éxito');
+    }
+
+    public function processAuth(Request $request)
+    {
+        $payments = Excel::toCollection(new ReversesImport(), $request->file('payments-auth'));
+
+        foreach ($payments[0] as $payment) {
+
+            $login = $payment[0];
+
+            $secretKey = $payment[1];
+
+            $url = $payment[2];
+
+            $process = new Payment();
+
+            $data = [
+                'payment' => [
+                    'reference' => 'TEST_1000',
+                    'description' => 'Conexion con WebCheckout desde un test',
+                    'amount' => [
+                        'currency' => 'USD',
+                        'total' => '50000',
+                    ]
+                ],
+                "instrument" => [
+                    "card" => [
+                        "number" => '36545400000008',
+                        "expiration" => "12/20",
+                        "cvv" => "123",
+                        "installments" => 2
+                    ]
+                ]
+            ];
+
+            $response = (new WebcheckoutService())->processAuth($data, $login, $secretKey, $url);
+
+            $process->internal_reference = $response['internalReference'];
+            $process->status = $response['status']['status'];
+            $process->amount = $response['amount']['total'];
+            $process->currency = $response['amount']['currency'];
+
+            if ($response['refunded'] == true) {
+                $process->reverse = 'true';
+            } else {
+                $process->reverse = 'false';
+            }
+            $process->save();
+        }
+
+        return redirect(route('payment.index'))->with('succes', 'All good');
     }
 
     public function export()

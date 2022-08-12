@@ -17,9 +17,12 @@ return new class extends Migration
             $table->id();
             $table->string('internal_reference');
             $table->string('status');
-            $table->integer('amount')->nullable();;
-            $table->string('currency')->nullable();;
+            $table->integer('amount');
+            $table->string('currency')->nullable();
             $table->string('reverse');
+            $table->string('login')->nullable();
+            $table->string('secret_key')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

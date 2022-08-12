@@ -10,7 +10,7 @@
 <body>
 <div class="h-screen">
     <div class="min-h-full w-full">
-        <div class="bg-sky-600">
+        <div class="bg-sky-600 shadow-2xl">
             <nav class="container px-5 py-5 flex grid grid-cols-2">
                 <div>
                     <span class="text-white font-bold text-xl">PlaceToPay - </span>
@@ -134,13 +134,13 @@
                         <div class="flex justify-center">
                             <span class="text-gray-800 font-bold">Validacion Excel</span>
                         </div>
-                        <form action="" enctype="multipart/form-data"
+                        <form action="{{route('payment.import.auth')}}" enctype="multipart/form-data"
                               method="POST">
                             @csrf
                             <div class="flex justify-center">
                                 <span>Valida un archivo excel para ser reversado en el metodo <span class="font-bold">Reverso Excel</span></span>
                             </div>
-                            <input class="mt-5" type="file" name="payments" required>
+                            <input class="mt-5" type="file" name="payments-auth" required>
                             <div class="flex justify-center">
                                 <button type="submit"
                                         class="bg-gray-100 hover:bg-gray-400 rounded-md p-1 mt-5">Enviar
@@ -209,8 +209,14 @@
                                 <th class="py-4 px-6 text-center">
                                     {{$payment->internal_reference}}
                                 </th>
-                                <td class="py-4 px-6 text-green-300">
-                                    {{$payment->status}}
+                                <td class="py-4 px-6">
+                                    @if($payment->status == 'APPROVED')
+                                        <span class="text-green-300">{{$payment->status}}</span>
+                                    @elseif($payment->status == 'REJECTED')
+                                        <span class="text-red-500">{{$payment->status}}</span>
+                                    @elseif($payment->status == 'PENDING')
+                                        <span class="text-yellow-200">{{$payment->status}}</span>
+                                    @endif
                                 </td>
                                 <td class="py-4 px-6 ">
                                     {{$payment->amount}}
@@ -239,7 +245,7 @@
                                     <form action="{{route('payment.update', $payment->id) }}" method="post">
                                         @csrf
                                         @method('PATCH')
-                                        @if($payment->reverse == 'false')
+                                        @if($payment->reverse == 'false' && $payment->status == 'APPROVED')
                                             <button type="submit"
                                                 class="font-medium text-green-600 dark:text-green-500 hover:underline">
                                             Reverse

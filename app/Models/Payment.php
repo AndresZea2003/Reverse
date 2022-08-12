@@ -14,6 +14,9 @@ class Payment extends Model
         'status',
         'amount',
         'currency',
-        'reverse'
+        'reverse',
+        'login',
+        'secret_key',
+        'url'
     ];
 }

@@ -7,8 +7,11 @@ use App\Requests\AuthRequestRequest;
 use App\Requests\CreateSessionRequest;
 use App\Requests\GetInformationRequest;
 use App\Requests\InformationRequest;
+use App\Requests\ProcessAuthRequest;
+use App\Requests\QueryAuthRequest;
 use App\Requests\ProcessRequest;
 use App\Requests\QueryRequest;
+use App\Requests\TransactionAuthRequest;
 use App\Requests\TransactionRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -68,6 +71,30 @@ class WebcheckoutService implements WebcheckoutContract
         $QueryRequest = new QueryRequest($data);
         $data = $QueryRequest->toArray();
         $url = $QueryRequest::url(null);
+        return $this->request($data, $url);
+    }
+
+    public function processAuth(array $data, string $login, string $secretKey, string $url)
+    {
+        $ProcessRequest = new ProcessAuthRequest($data);
+        $data = $ProcessRequest->toArray($login, $secretKey);
+        $url = $ProcessRequest::url($url);
+        return $this->request($data, $url);
+    }
+
+    public function transactionAuth(array $data, string $login, string $secretKey, string $url)
+    {
+        $TransactionRequest = new TransactionAuthRequest($data);
+        $data = $TransactionRequest->toArray($login, $secretKey);
+        $url = $TransactionRequest::url($url);
+        return $this->request($data, $url);
+    }
+
+    public function queryAuth(array $data, string $login, string $secretKey, string $url)
+    {
+        $QueryRequest = new QueryRequest($data);
+        $data = $QueryRequest->toArray($login, $secretKey);
+        $url = $QueryRequest::url($url);
         return $this->request($data, $url);
     }
 

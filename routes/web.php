@@ -20,6 +20,8 @@ Route::resource('payment', PaymentsController::class);
 
 //Route::view('/import', 'import')->name('import');
 
+Route::post('/import-auth', [PaymentsController::class, 'processAuth'])->name('payment.import.auth');
+
 Route::post('/import', [PaymentsController::class, 'import'])->name('payment.import');
 
 Route::post('/reverse', [PaymentsController::class, 'reverse'])->name('payment.reverse');
