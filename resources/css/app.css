@@ -1,3 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Paytone+One&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-paytone {
+    font-family: 'Paytone One', sans-serif;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input {
+    border: solid 1.5px #9e9e9e;
+    border-radius: 1rem;
+    background: none;
+    padding: 1rem;
+    font-size: 1rem;
+    color: #1a202c;
+    transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.user-label {
+    position: absolute;
+    left: 15px;
+    color: #1a202c;
+    pointer-events: none;
+    transform: translateY(1rem);
+    transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input:focus,
+input:valid {
+    outline: none;
+    border: 1.5px solid #1a73e8;
+}
+
+.input:focus ~ label,
+input:valid ~ label {
+    transform: translateY(-50%) scale(0.8);
+    background-color: #e5e7eb;
+    padding: 0 0.2em;
+    color: #2196f3;
+}
+
+/* From uiverse.io by @alexmaracinaru */
+button1 {
+  cursor: pointer;
+  font-weight: 700;
+  font-family: Helvetica,"sans-serif";
+  transition: all .2s;
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+button1:hover {
+  background: #5BFF99;
+}
+
+button1 > svg {
+  width: 34px;
+  margin-left: 10px;
+  transition: transform .3s ease-in-out;
+}
+
+button1:hover svg {
+  transform: translateX(5px);
+}
+
+button1:active {
+  transform: scale(0.95);
+}
+
+/* From uiverse.io by @ferlagher */
+/* From uiverse.io by @WhiteNervosa */
+button2 {
+  font-size: 15px;
+  color: #e1e1e1;
+  font-family: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  background: none;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-duration: 400ms;
+  transition-property: color;
+}
+
+button2:focus,
+button2:hover {
+  color: #fff;
+}
+
+button2:focus:after,
+button2:hover:after {
+  width: 100%;
+  left: 0%;
+}
+
+button2:after {
+  content: "";
+  pointer-events: none;
+  bottom: -2px;
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background-color: #fff;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-duration: 400ms;
+  transition-property: width, left;
+}
+
+.loader {
+  position: relative;
+}
+
+.loader span {
+  position: absolute;
+  color: #fff;
+  transform: translate(-50%, -50%);
+  font-size: 38px;
+  letter-spacing: 5px;
+}
+
+.loader span:nth-child(1) {
+  color: transparent;
+  -webkit-text-stroke: 0.3px rgb(0, 0, 0 );
+}
+
+.loader span:nth-child(2) {
+  color: rgb(236, 134, 31);
+  -webkit-text-stroke: 1px rgb(236, 134, 31);
+  animation: uiverse723 3s ease-in-out infinite;
+}
+
+@keyframes uiverse723 {
+  0%, 100% {
+    clip-path: polygon(0% 45%, 15% 44%, 32% 50%,
+     54% 60%, 70% 61%, 84% 59%, 100% 52%, 100% 100%, 0% 100%);
+  }
+
+  50% {
+    clip-path: polygon(0% 60%, 16% 65%, 34% 66%,
+     51% 62%, 67% 50%, 84% 45%, 100% 46%, 100% 100%, 0% 100%);
+  }
+}
+

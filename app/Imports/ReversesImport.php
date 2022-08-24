@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class ReversesImport implements ToModel
+class ReversesImport implements ToModel, WithValidation
 {
     public function model(array $row)
     {
@@ -19,9 +19,13 @@ class ReversesImport implements ToModel
 
     public function rules(): array
     {
-       return [
-            'internal_reference' => 'required|min:3|max:15|alpha_num',
-//           'status' => ['required', Rule::in(['pending', 'in_progress', 'complete'])],
+        return [
+            'internal_reference' => 'required|min:6|max:15|alpha_num',
         ];
+    }
+
+    public function uniqueBy(): string
+    {
+        return 'internal_reference';
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\PaymentsController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,14 +17,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
 
-Route::resource('payment', PaymentsController::class);
+Route::group(['middleware' => ['auth', 'verified']], function () {
 
+    Route::view('/home', 'home')->name('home');
+
+    Route::resource('payment', PaymentsController::class);
+
+    Route::resource('credential', CredentialController::class);
 //Route::view('/import', 'import')->name('import');
 
-Route::post('/import-auth', [PaymentsController::class, 'processAuth'])->name('payment.import.auth');
+    Route::post('/import-auth', [PaymentsController::class, 'processAuth'])->name('payment.import.auth');
 
-Route::post('/import', [PaymentsController::class, 'import'])->name('payment.import');
+    Route::post('/import', [PaymentsController::class, 'import'])->name('payment.import');
 
-Route::post('/reverse', [PaymentsController::class, 'reverse'])->name('payment.reverse');
+    Route::post('/reverse', [PaymentsController::class, 'reverse'])->name('payment.reverse');
 
-Route::get('/export', [PaymentsController::class, 'export'])->name('payment.export');
+    Route::get('/export', [PaymentsController::class, 'export'])->name('payment.export');
+});

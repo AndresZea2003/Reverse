@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\PaymentsExport;
+use App\Http\Requests\Payments\StoreRequest;
 use App\Imports\PaymentsImport;
 use App\Imports\ReversesImport;
 use App\Models\Payment;
@@ -51,7 +52,7 @@ class PaymentsController extends Controller
                     'reference' => 'TEST_1000',
                     'description' => 'Conexion con WebCheckout desde un test',
                     'amount' => [
-                        'currency' => 'USD',
+                        'currency' => 'COP',
                         'total' => '50000',
                     ]
                 ],
@@ -83,7 +84,7 @@ class PaymentsController extends Controller
 
         }
 
-        return redirect(route('payment.index'));
+        return redirect(route('payment.index'))->with('success', 'Se importaron ' . $i . ' pagos correctamente');;
     }
 
     public function show(Payment $process)
@@ -139,7 +140,10 @@ class PaymentsController extends Controller
     {
         $payments = Excel::toCollection(new ReversesImport(), $request->file('payments'));
 
+        $count = 0;
+
         foreach ($payments[0] as $payment) {
+
             $process = new Payment();
 
             $data = [
@@ -147,7 +151,7 @@ class PaymentsController extends Controller
                     'reference' => 'TEST_1000',
                     'description' => 'Conexion con WebCheckout desde un test',
                     'amount' => [
-                        'currency' => 'USD',
+                        'currency' => 'COP',
                         'total' => '50000',
                     ]
                 ],
@@ -161,21 +165,20 @@ class PaymentsController extends Controller
                 ]
             ];
 
-            if($payment[6] === null )
-            {
+            if ($payment[1] === null) {
                 $response = (new WebcheckoutService())->process($data);
                 $process->login = config('webcheckout.login');
                 $process->secret_key = config('webcheckout.secretKey');
                 $process->url = config('webcheckout.url');
-            }else{
-                $login = $payment[6];
-                $secretKey = $payment[7];
-                $url = $payment[8];
+            } else {
+                $login = $payment[1];
+                $secretKey = $payment[2];
+                $url = $payment[3];
                 $response = (new WebcheckoutService())->processAuth($data, $login, $secretKey, $url);
 
-                $process->login = $payment[6];
-                $process->secret_key = $payment[7];
-                $process->url = $payment[8];
+                $process->login = $payment[1];
+                $process->secret_key = $payment[2];
+                $process->url = $payment[3];
             }
 
             $process->internal_reference = $response['internalReference'];
@@ -189,9 +192,10 @@ class PaymentsController extends Controller
                 $process->reverse = 'false';
             }
             $process->save();
+            $count++;
         }
 
-        return redirect(route('payment.index'))->with('succes', 'All good');
+        return redirect(route('payment.index'))->with('success', 'Se importaron ' . $count . ' pagos correctamente');
     }
 
     public function reverse(Request $request)
@@ -206,18 +210,16 @@ class PaymentsController extends Controller
                 "action" => "reverse"
             ];
 
-            if($payment[6] === null )
-            {
+            if ($payment[6] === null) {
                 $response = (new WebcheckoutService())->transaction($data);
-            }else{
+            } else {
                 $login = $payment[6];
                 $secretKey = $payment[7];
                 $url = $payment[8];
                 $response = (new WebcheckoutService())->transactionAuth($data, $login, $secretKey, $url);
             }
 
-            if ($response['status']['status'] == 'APPROVED')
-            {
+            if ($response['status']['status'] == 'APPROVED') {
                 $refunded = 'true';
             } else {
                 $refunded = 'false';
@@ -227,7 +229,7 @@ class PaymentsController extends Controller
                 'reverse' => $refunded
             ]);
         }
-        return redirect()->route('payment.index')->with('info', 'Importación realizada con éxito');
+        return redirect()->route('payment.index')->with('success', 'Reverso realizado correctamente');
     }
 
     public function processAuth(Request $request)

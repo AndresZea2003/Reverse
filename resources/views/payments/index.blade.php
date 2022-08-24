@@ -9,14 +9,33 @@
 </head>
 <body>
 <div class="h-screen">
-    <div class="min-h-full w-full">
-        <div class="bg-sky-600 shadow-2xl">
-            <nav class="container px-5 py-5 flex grid grid-cols-2">
-                <div>
-                    <span class="text-white font-bold text-xl">PlaceToPay - </span>
-                    <span class="text-stone-800 font-bold text-xl">Reverso masivo</span>
+    <div class="min-h-full w-full bg-sky-100">
+        <div class="bg-sky-600 shadow-2xl px-5 py-5 flex grid grid-cols-3">
+            <div class="flex items-center">
+                <span class="text-gray-300 font-bold text-xl">Place<span class="text-orange-400">To</span>Pay</span>
+                <span class="font-bold mx-2 text-2xl"> - </span>
+                <span class="text-stone-800 font-bold text-xl">Reverso masivo</span>
+            </div>
+            <div class="flex items-center border-stone-800 border-l-2">
+                <div class="px-10">
+                    <a href="{{route('credential.index')}}">
+                        <button2 class="text-gray-900">Configurar credenciales</button2>
+                    </a>
                 </div>
-            </nav>
+            </div>
+            <div class="flex justify-end">
+                <div>
+                    <span class="text-gray-300 font-bold">Hola! {{ auth()->user()->name }}</span>
+                    <div class="flex justify-end">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit">
+                                <button2 class="text-gray-900">Cerrar Sesion</button2>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="flex justify-center grid grid-cols-12">
 
@@ -41,8 +60,15 @@
                                 <span>Genera la cantidad de pagos deseados</span>
                             </div>
                             <div class="flex justify-center my-3">
-                                <input type="number" name="countPayment" placeholder="Ejemplo: 18" required>
+                                <input type="number" name="countPayment" placeholder="Ejemplo: 18">
                             </div>
+                            @error('countPayment')
+                            <div class="flex justify-center">
+                                <div class="text-red-600 font-bold">
+                                    {{$message}}
+                                </div>
+                            </div>
+                            @enderror
                             <div class="flex justify-center my-3">
                                 <button type="submit" class="bg-gray-100 hover:bg-gray-400 rounded-md p-1">
                                     Enviar
@@ -87,6 +113,13 @@
                                 <span>Genera multiples pagos transacciones atraves de un archivo excel</span>
                             </div>
                             <input class="mt-5" type="file" name="payments" required>
+                            {{--                            @if(isset($errors) && $errors->any())--}}
+                            {{--                                <div class="bg-red-500">--}}
+                            {{--                                    @foreach($errors->all() as $error)--}}
+                            {{--                                        {{$error}}--}}
+                            {{--                                    @endforeach--}}
+                            {{--                                </div>--}}
+                            {{--                            @endif--}}
                             <div class="flex justify-center">
                                 <button type="submit"
                                         class="bg-gray-100 hover:bg-gray-400 rounded-md p-1 mt-5">Enviar
@@ -153,6 +186,32 @@
 
             <div class="col-span-9 flex justify-center">
                 <div class="overflow-x-auto relative sm:rounded-lg">
+                    {{--                    <div class="mt-5 bg-red-400 flex justify-center p-2 rounded-md">--}}
+                    {{--                        <div class="text-red-700 font-bold">--}}
+                    {{--                            Error Fila 2: El internal Reference debe ser unico--}}
+                    {{--                        </div>--}}
+                    {{--                    </div>--}}
+                    @if( session('success') )
+                        <div class="mt-5 bg-green-400 flex justify-center p-2 rounded-md">
+                            <div class="text-green-700 font-bold">
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    @endif
+
+                    {{--                    @if ($errors->any())--}}
+                    {{--                        <div class="alert alert-danger">--}}
+                    {{--                            <ul>--}}
+                    {{--                                @foreach ($errors->all() as $error)--}}
+                    {{--                                    <li>{{ $error }}</li>--}}
+                    {{--                                @endforeach--}}
+                    {{--                            </ul>--}}
+                    {{--                        </div>--}}
+                    {{--                    @endif--}}
+
+                    {{--                    @foreach($errors->all() as $error)--}}
+                    {{--                        {{ $error }}--}}
+                    {{--                    @endforeach--}}
                     <div class="mt-5">
                         <div class="flex grid grid-cols-2 py-2 rounded-t-lgc ">
                             <div class="mr-24">
@@ -247,9 +306,9 @@
                                         @method('PATCH')
                                         @if($payment->reverse == 'false' && $payment->status == 'APPROVED')
                                             <button type="submit"
-                                                class="font-medium text-green-600 dark:text-green-500 hover:underline">
-                                            Reverse
-                                        </button>
+                                                    class="font-medium text-green-600 dark:text-green-500 hover:underline">
+                                                Reverse
+                                            </button>
                                         @endif
                                     </form>
                                 </td>
