@@ -12,18 +12,13 @@
             "dest": "/api/index.php"
         },
         {
-            "src": "/resources/(.*)",
-            "dest": "/public/assets/"
-        },
-        {
-            "src": "/favicon/(.*)",
-            "dest": "/public/favicon/"
-        },
-        {
             "src": "/build/(.*)",
             "dest": "/public/build/"
         }
     ],
+    "public": true,
+    "buildCommand": "vite build",
+    "outputDirectory": "public",
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
