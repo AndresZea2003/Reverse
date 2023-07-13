@@ -13,7 +13,7 @@
         },
         {
             "src": "/resources/(.*)",
-            "dest": "/public/resources/"
+            "dest": "/public/assets/"
         },
         {
             "src": "/favicon/(.*)",
