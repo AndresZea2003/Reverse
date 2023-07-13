@@ -58,9 +58,8 @@
                                 Secret Key
                             </label>
                             <input
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                                 id="secret_key" name="secret_key" type="text" placeholder="Secret_Key" required>
-                            <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                         </div>
                         <div class="w-full md:w-1/2 px-3">
                             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -113,12 +112,6 @@
                             <button type="submit" class="bg-green-400 px-2 py-1 w-full rounded-md">Agregar</button>
                         </div>
                     </div>
-                </form>
-
-                <form action="{{route('credential.store')}}" method="post">
-                    @csrf
-                    <input id="ola" type="text">
-                    <button type="submit">Enviar</button>
                 </form>
             </div>
 

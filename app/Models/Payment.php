@@ -15,8 +15,6 @@ class Payment extends Model
         'amount',
         'currency',
         'reverse',
-        'login',
-        'secret_key',
-        'url'
+        'credential_id',
     ];
 }

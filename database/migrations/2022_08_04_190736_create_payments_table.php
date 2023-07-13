@@ -20,9 +20,8 @@ return new class extends Migration
             $table->integer('amount');
             $table->string('currency')->nullable();
             $table->string('reverse');
-            $table->string('login')->nullable();
-            $table->string('secret_key')->nullable();
-            $table->string('url')->nullable();
+            $table->enum('local', ['CO', 'EC', 'PR']);
+            $table->integer('credential_id');
             $table->timestamps();
         });
     }

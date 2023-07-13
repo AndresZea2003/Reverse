@@ -59,8 +59,28 @@
                             <div class="flex justify-center">
                                 <span>Genera la cantidad de pagos deseados</span>
                             </div>
-                            <div class="flex justify-center my-3">
-                                <input type="number" name="countPayment" placeholder="Ejemplo: 18">
+                            <div class="grid grid-cols-2 gap-5">
+                                <div class="flex justify-end items-center mt-5">
+                                    <span>Numero de pagos: </span>
+                                </div>
+                                <div class="flex justify-start item mt-5">
+                                    <input class="" type="number" name="countPayment" placeholder="Ejemplo: 18">
+                                </div>
+                                <div class="flex justify-end items-center">
+                                    <span>Usar credencial: </span>
+                                </div>
+                                <div class="flex justify-start">
+                                    <select name="credential" id="credential">
+                                        @foreach($Credentials as $Credential)
+                                            <option>{{$Credential->id}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @if($Credentials == null)
+                                <div class="flex justify-center col-span-2 text-red-600 font-bold">
+                                    <span>Nota: Agrega una credencial para usarla!</span>
+                                </div>
+                                @endif
                             </div>
                             @error('countPayment')
                             <div class="flex justify-center">
@@ -253,6 +273,9 @@
                             <th scope="col" class="py-3 px-6">
                                 Reverse
                             </th>
+                            <th scope="col" class="py-3 px-6">
+                                Local
+                            </th>
                             <th scope="col" colspan="2" class="py-3 px-6 text-center">
                                 Actions
                             </th>
@@ -289,6 +312,9 @@
                                     @elseif($payment->reverse == 'false')
                                         <span class="text-red-600">{{$payment->reverse}}</span>
                                     @endif
+                                </td>
+                                <td class="py-4 px-6 text-center text-yellow-200">
+                                    {{$payment->local}}
                                 </td>
                                 <td class="py-4 px-6 text-center">
                                     <form action="{{route('payment.destroy', $payment->id) }}" method="post">

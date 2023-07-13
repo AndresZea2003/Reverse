@@ -6,6 +6,7 @@ use App\Exports\PaymentsExport;
 use App\Http\Requests\Payments\StoreRequest;
 use App\Imports\PaymentsImport;
 use App\Imports\ReversesImport;
+use App\Models\Credential;
 use App\Models\Payment;
 use App\Services\WebcheckoutService;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class PaymentsController extends Controller
 //        $payments = Payment::paginate(10);
         $payments = Payment::all();
         $count = Payment::all()->where('id')->count();
-        return view('payments.index', compact('payments', 'count'));
+        $Credentials = Credential::all();
+        return view('payments.index', compact('payments', 'count', 'Credentials'));
     }
 
     public function create()
@@ -30,8 +32,19 @@ class PaymentsController extends Controller
 
     public function store(Request $request)
     {
+
+        $numCredential = $request->input('credential');
+
+        $credentials = Credential::all()->toArray();
+
         $i = 0;
         $card = '36545400000008';
+
+        $numArray = $numCredential - 1;
+
+        $login = $credentials[$numArray]['login'];
+        $secretKey = $credentials[$numArray]['secret_key'];
+        $url = $credentials[$numArray]['url'];
 
         if ($request->input('countPayment') != null) {
             $count = $request->input('countPayment');
@@ -52,7 +65,7 @@ class PaymentsController extends Controller
                     'reference' => 'TEST_1000',
                     'description' => 'Conexion con WebCheckout desde un test',
                     'amount' => [
-                        'currency' => 'COP',
+                        'currency' => 'USD',
                         'total' => '50000',
                     ]
                 ],
@@ -65,7 +78,7 @@ class PaymentsController extends Controller
                     ]
                 ]
             ];
-            $response = (new WebcheckoutService())->process($data);
+            $response = (new WebcheckoutService())->processAuth($data, $login, $secretKey, $url);
 
             $payment->internal_reference = $response['internalReference'];
             $payment->status = $response['status']['status'];
@@ -77,6 +90,10 @@ class PaymentsController extends Controller
             } else {
                 $payment->reverse = 'false';
             }
+
+            $payment->local = $credentials[$numArray]['local'];
+
+            $payment->credential_id = $request->input('credential');
 
             $payment->save();
 
@@ -142,7 +159,13 @@ class PaymentsController extends Controller
 
         $count = 0;
 
+        $credentials = Credential::all()->toArray();
+
+
         foreach ($payments[0] as $payment) {
+
+            $numCredential = $payment[1];
+            $numArray = $numCredential - 1;
 
             $process = new Payment();
 
@@ -171,14 +194,14 @@ class PaymentsController extends Controller
                 $process->secret_key = config('webcheckout.secretKey');
                 $process->url = config('webcheckout.url');
             } else {
-                $login = $payment[1];
-                $secretKey = $payment[2];
-                $url = $payment[3];
+                $login = $credentials[$numArray]['login'];
+                $secretKey = $credentials[$numArray]['secret_key'];
+                $url = $credentials[$numArray]['url'];
                 $response = (new WebcheckoutService())->processAuth($data, $login, $secretKey, $url);
 
-                $process->login = $payment[1];
-                $process->secret_key = $payment[2];
-                $process->url = $payment[3];
+                $process->local = $credentials[$numArray]['local'];
+
+                $process->credential_id = $payment[1];
             }
 
             $process->internal_reference = $response['internalReference'];
@@ -202,7 +225,13 @@ class PaymentsController extends Controller
     {
         $payments = Excel::toCollection(new ReversesImport(), $request->file('payments'));
 
+        $credentials = Credential::all()->toArray();
+
         foreach ($payments[0] as $payment) {
+
+//            dd($payment[1]);
+            $numCredential = $payment[7];
+            $numArray = $numCredential - 1;
 
             $data = [
                 "internalReference" => $payment[1],
@@ -210,12 +239,12 @@ class PaymentsController extends Controller
                 "action" => "reverse"
             ];
 
-            if ($payment[6] === null) {
+            if ($payment[7] === null) {
                 $response = (new WebcheckoutService())->transaction($data);
             } else {
-                $login = $payment[6];
-                $secretKey = $payment[7];
-                $url = $payment[8];
+                $login = $credentials[$numArray]['login'];
+                $secretKey = $credentials[$numArray]['secret_key'];
+                $url = $credentials[$numArray]['url'];
                 $response = (new WebcheckoutService())->transactionAuth($data, $login, $secretKey, $url);
             }
 

@@ -13,7 +13,7 @@ class ReversesImport implements ToModel, WithValidation
     {
         return new Payment([
            'internal_reference' => $row[0],
-            'authorization' => $row[1]
+           'authorization' => $row[1]
         ]);
     }
 

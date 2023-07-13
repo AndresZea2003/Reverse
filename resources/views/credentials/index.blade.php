@@ -42,8 +42,7 @@
             <div class="flex grid grid-cols-2">
                 <div>
                     <a href="{{route('credential.create')}}">
-                        <button class="bg-gray-400 px-3 py-2 rounded-md font-bold hover:bg-gray-500">Agregar nueva
-                            credencial
+                        <button class="bg-gray-400 px-3 py-2 rounded-md font-bold hover:bg-gray-500">Agregar nuevo sitio
                         </button>
                     </a>
                 </div>
